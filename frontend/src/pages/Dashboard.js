@@ -7,8 +7,8 @@ import {
   CardContent,
   Alert,
 } from '@mui/material';
-import DashboardCards from '../components/dashboard/DashboardCards';
-import DashboardCharts from '../components/dashboard/DashboardCharts';
+import DashboardCards from '../components/dashboard/DashBoardCards';
+import DashboardCharts from '../components/dashboard/DashBoardCharts';
 import RecentActivity from '../components/dashboard/RecentActivity';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { useAuth } from '../context/AuthContext';
