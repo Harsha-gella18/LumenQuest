@@ -2,6 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 require('dotenv').config();
 const routes = require('./routes/index.js');
+
+const cors = require('cors');
 const app = express();
 
 // Import models
@@ -11,7 +13,12 @@ require('./models/Subscription');
 require('./models/Payment');
 require('./models/Offer');
 require('./models/AuditLog');
+
 // Middleware
+app.use(cors({
+  origin: '*', // Change to your frontend URL in production for better security
+  credentials: true
+}));
 app.use(express.json());
 
 // MongoDB connection
