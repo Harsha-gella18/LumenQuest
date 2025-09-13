@@ -9,11 +9,11 @@ import {
   Dialog,
 } from '@mui/material';
 import { Add } from '@mui/icons-material';
-import SubscriptionList from 'components/subscriptions/SubscriptionList';
-import SubscriptionModal from 'components/subscriptions/SubscriptionModal';
-import UsageTracker from 'components/subscriptions/UsageTracker';
-import LoadingSpinner from 'components/common/LoadingSpinner';
-import { subscriptionService } from 'services/subscriptionService';
+import SubscriptionList from '../components/subscriptions/SubscriptionList';
+import SubscriptionModal from '../components/subscriptions/SubscriptionModal';
+import UsageTracker from '../components/subscriptions/UsageTracker';
+import LoadingSpinner from '../components/common/LoadingSpinner';
+import { subscriptionService } from '../services/subscriptionService';
 
 const Subscriptions = () => {
   const [subscriptions, setSubscriptions] = useState([]);

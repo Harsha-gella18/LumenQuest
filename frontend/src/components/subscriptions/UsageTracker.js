@@ -9,13 +9,15 @@ import {
   Chip,
   List,
   ListItem,
+  ListItemText,
+  ListItemIcon,
 } from '@mui/material';
 import {
   DataUsage,
   Warning,
   CheckCircle,
 } from '@mui/icons-material';
-import { subscriptionService } from 'services/subscriptionService';
+import { subscriptionService } from '../../services/subscriptionService';
 
 const UsageTracker = ({ subscriptions }) => {
   const [usageData, setUsageData] = useState([]);

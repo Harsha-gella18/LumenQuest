@@ -11,9 +11,9 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
 import App from './App';
-import { AuthProvider } from 'context/AuthContext';
-import { NotificationProvider } from 'context/NotificationContext';
-import theme from 'theme/theme';
+import { AuthProvider } from './context/AuthContext';
+import { NotificationProvider } from './context/NotificationContext';
+import theme from './theme/theme';
 import './App.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

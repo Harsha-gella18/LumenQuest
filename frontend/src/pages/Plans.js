@@ -13,10 +13,10 @@ import {
   Chip,
 } from '@mui/material';
 import { ViewModule, ViewList } from '@mui/icons-material';
-import PlanGrid from 'components/plans/PlanGrid';
-import PlanComparison from 'components/plans/PlanComparison';
-import LoadingSpinner from 'components/common/LoadingSpinner';
-import { planService } from 'services/planService';
+import PlanGrid from '../components/plans/PlanGrid';
+import PlanComparison from '../components/plans/PlanComparison';
+import LoadingSpinner from '../components/common/LoadingSpinner';
+import { planService } from '../services/planService';
 
 const Plans = () => {
   const [plans, setPlans] = useState([]);

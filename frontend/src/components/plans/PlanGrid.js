@@ -1,44 +1,166 @@
-import React from 'react';
-import { Grid, Card, CardContent, CardActions, Typography, Button, Chip, Box } from '@mui/material';
-import { planService } from '../../services/planService';
+import React, { useState } from 'react';
+import {
+  Grid,
+  Card,
+  CardContent,
+  CardActions,
+  Typography,
+  Button,
+  Box,
+  Chip,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Dialog,
+} from '@mui/material';
+import { Check, Star } from '@mui/icons-material';
+import { subscriptionService } from '../../services/subscriptionService';
+import { toast } from 'react-toastify';
 
-const PlanGrid = ({ plans = [], recommendations = [], onSubscribe }) => {
-  const handleSubscribe = async (id) => {
-    await planService.subscribe(id);
-    onSubscribe?.();
+const PlanGrid = ({ plans, recommendations, onSubscribe }) => {
+  const [loading, setLoading] = useState({});
+  const [confirmDialog, setConfirmDialog] = useState({ open: false, plan: null });
+
+  const handleSubscribe = async (plan) => {
+    try {
+      setLoading(prev => ({ ...prev, [plan.id]: true }));
+      await subscriptionService.createSubscription({ planId: plan.id });
+      toast.success(`Successfully subscribed to ${plan.name}`);
+      onSubscribe();
+    } catch (error) {
+      toast.error('Failed to subscribe to plan');
+    } finally {
+      setLoading(prev => ({ ...prev, [plan.id]: false }));
+      setConfirmDialog({ open: false, plan: null });
+    }
+  };
+
+  const isRecommended = (planId) => recommendations.includes(planId);
+
+  const formatFeatures = (features) => {
+    if (typeof features === 'string') return [features];
+    if (Array.isArray(features)) return features;
+    if (typeof features === 'object') return Object.values(features);
+    return [];
   };
 
   return (
-    <Grid container spacing={3}>
-      {plans.map((plan) => (
-        <Grid item xs={12} sm={6} md={4} key={plan.id}>
-          <Card>
-            <CardContent>
-              <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Typography variant="h6">{plan.name}</Typography>
-                {recommendations.includes(plan.id) && (
-                  <Chip label="Recommended" size="small" color="primary" />
+    <>
+      <Grid container spacing={3}>
+        {plans.map((plan) => (
+          <Grid item xs={12} sm={6} md={4} key={plan.id}>
+            <Card 
+              sx={{ 
+                height: '100%', 
+                display: 'flex', 
+                flexDirection: 'column',
+                position: 'relative',
+                ...(isRecommended(plan.id) && {
+                  border: '2px solid',
+                  borderColor: 'primary.main',
+                })
+              }}
+            >
+              {isRecommended(plan.id) && (
+                <Chip
+                  icon={<Star />}
+                  label="Recommended"
+                  color="primary"
+                  size="small"
+                  sx={{
+                    position: 'absolute',
+                    top: 16,
+                    right: 16,
+                    zIndex: 1,
+                  }}
+                />
+              )}
+
+              <CardContent sx={{ flexGrow: 1 }}>
+                <Typography gutterBottom variant="h5" component="div">
+                  {plan.name}
+                </Typography>
+
+                <Box display="flex" alignItems="baseline" mb={2}>
+                  <Typography variant="h4" color="primary">
+                    ${plan.price}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary" sx={{ ml: 1 }}>
+                    /{plan.billingInterval}
+                  </Typography>
+                </Box>
+
+                <Typography variant="body2" color="textSecondary" paragraph>
+                  {plan.description}
+                </Typography>
+
+                <Box mb={2}>
+                  <Typography variant="body2" fontWeight="bold">
+                    Data Allowance: {plan.dataQuotaGB ? `${plan.dataQuotaGB} GB` : 'Unlimited'}
+                  </Typography>
+                </Box>
+
+                {plan.features && (
+                  <List dense>
+                    {formatFeatures(plan.features).slice(0, 4).map((feature, index) => (
+                      <ListItem key={index} sx={{ px: 0 }}>
+                        <ListItemIcon sx={{ minWidth: 32 }}>
+                          <Check color="success" fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText 
+                          primary={feature} 
+                          primaryTypographyProps={{ variant: 'body2' }}
+                        />
+                      </ListItem>
+                    ))}
+                  </List>
                 )}
-              </Box>
-              <Typography variant="h4" sx={{ my: 1 }}>
-                ${plan.price}<Typography component="span" variant="subtitle2">/mo</Typography>
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                {plan.dataQuotaGB ? `${plan.dataQuotaGB} GB data` : 'Unlimited data'}
-              </Typography>
-              <Box>
-                {(plan.features || []).map((f) => (
-                  <Typography key={f} variant="body2">• {f}</Typography>
-                ))}
-              </Box>
-            </CardContent>
-            <CardActions>
-              <Button fullWidth variant="contained" onClick={() => handleSubscribe(plan.id)}>Subscribe</Button>
-            </CardActions>
-          </Card>
-        </Grid>
-      ))}
-    </Grid>
+              </CardContent>
+
+              <CardActions sx={{ p: 2, pt: 0 }}>
+                <Button
+                  fullWidth
+                  variant={isRecommended(plan.id) ? 'contained' : 'outlined'}
+                  color="primary"
+                  onClick={() => setConfirmDialog({ open: true, plan })}
+                  disabled={loading[plan.id]}
+                >
+                  {loading[plan.id] ? 'Subscribing...' : 'Subscribe'}
+                </Button>
+              </CardActions>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+
+      <Dialog
+        open={confirmDialog.open}
+        onClose={() => setConfirmDialog({ open: false, plan: null })}
+      >
+        <Box p={3}>
+          <Typography variant="h6" gutterBottom>
+            Confirm Subscription
+          </Typography>
+          <Typography variant="body2" paragraph>
+            Are you sure you want to subscribe to {confirmDialog.plan?.name} 
+            for ${confirmDialog.plan?.price}/{confirmDialog.plan?.billingInterval}?
+          </Typography>
+          <Box display="flex" gap={2} justifyContent="flex-end">
+            <Button onClick={() => setConfirmDialog({ open: false, plan: null })}>
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              onClick={() => handleSubscribe(confirmDialog.plan)}
+              disabled={loading[confirmDialog.plan?.id]}
+            >
+              {loading[confirmDialog.plan?.id] ? 'Processing...' : 'Confirm'}
+            </Button>
+          </Box>
+        </Box>
+      </Dialog>
+    </>
   );
 };
 

@@ -24,7 +24,7 @@ import {
   Refresh,
 } from '@mui/icons-material';
 import { format } from 'date-fns';
-import { subscriptionService } from 'services/subscriptionService';
+import { subscriptionService } from '../../services/subscriptionService';
 import { toast } from 'react-toastify';
 
 const SubscriptionList = ({ subscriptions, onEdit, onRefresh }) => {

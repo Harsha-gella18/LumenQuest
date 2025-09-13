@@ -20,7 +20,7 @@ import {
   AdminPanelSettings,
   Analytics,
 } from '@mui/icons-material';
-import { useAuth } from 'context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 
 const drawerWidth = 240;
 

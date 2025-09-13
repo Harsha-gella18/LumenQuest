@@ -1,21 +1,21 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Box } from '@mui/material';
-import { useAuth } from 'context/AuthContext';
+import { useAuth } from './context/AuthContext';
 
 // Components
-import Layout from 'components/common/Layout';
-import LoadingSpinner from 'components/common/LoadingSpinner';
-import ProtectedRoute from 'components/common/ProtectedRoute';
+import Layout from './components/common/Layout';
+import LoadingSpinner from './components/common/LoadingSpinner';
+import ProtectedRoute from './components/common/ProtectedRoute';
 
 // Pages
-import Login from 'pages/Login';
-import Register from 'pages/Register';
-import Dashboard from 'pages/Dashboard';
-import Subscriptions from 'pages/Subscriptions';
-import Plans from 'pages/Plans';
-import Profile from 'pages/Profile';
-import Admin from 'pages/Admin';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
+import Subscriptions from './pages/Subscriptions';
+import Plans from './pages/Plans';
+import Profile from './pages/Profile';
+import Admin from './pages/Admin';
 
 function App() {
   const { user, loading } = useAuth();
@@ -46,7 +46,7 @@ function App() {
             <Route path="plans" element={<Plans />} />
             <Route path="profile" element={<Profile />} />
             <Route 
-              path="admin/*" 
+              path="admin" 
               element={
                 <ProtectedRoute requiredRole="admin">
                   <Admin />

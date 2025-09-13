@@ -19,7 +19,7 @@ import {
   Settings,
   Logout,
 } from '@mui/icons-material';
-import { useAuth } from 'context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 
 const Header = ({ onMenuClick }) => {
   const theme = useTheme();

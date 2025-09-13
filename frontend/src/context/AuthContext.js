@@ -69,6 +69,7 @@ export function AuthProvider({ children }) {
         payload: { user, token } 
       });
     } catch (error) {
+      console.error('Token verification failed:', error);
       localStorage.removeItem('token');
       dispatch({ 
         type: 'LOGIN_FAILURE', 
@@ -88,6 +89,7 @@ export function AuthProvider({ children }) {
       });
       return response;
     } catch (error) {
+      console.error('Login failed:', error);
       dispatch({ 
         type: 'LOGIN_FAILURE', 
         payload: error.message 
