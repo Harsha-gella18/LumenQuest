@@ -10,7 +10,7 @@ require('./models/Plan');
 require('./models/Subscription');
 require('./models/Payment');
 require('./models/Offer');
-
+require('./models/AuditLog');
 // Middleware
 app.use(express.json());
 
