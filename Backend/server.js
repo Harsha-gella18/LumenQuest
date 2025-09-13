@@ -30,6 +30,14 @@ require('./models/Offer');
 const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
 
+// Recommendation routes
+const recommendationRoutes = require('./routes/recommendations');
+app.use('/api/recommendations', recommendationRoutes);
+
+// Analytics routes
+const analyticsRoutes = require('./routes/analytics');
+app.use('/api/analytics', analyticsRoutes);
+
 // Example route
 app.get('/', (req, res) => {
   res.send('FiberConnectTV API');
