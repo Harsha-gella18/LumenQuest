@@ -2,8 +2,20 @@ const User = require('../../models/User');
 const Payment = require('../../models/Payment');
 const Plan = require('../../models/Plan');
 const Subscription = require('../../models/Subscription');
+const Offer = require('../../models/Offer');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-// --- Payment APIs --- 
+
+// Dummy payment link generator
+const generatePaymentLink = (id) => `https://payment.gateway/checkout/${id}`;
+
+// Middleware to get user from JWT (dummy, replace with real auth)
+const getUserFromJWT = async (req) => {
+  // Example: req.user = { id: ... } set by auth middleware
+  // Replace with actual JWT verification logic
+  return await User.findById(req.user.id);
+};
+
+// --- Payment APIs ---
 
 // POST /payments/initiate
 exports.initiatePayment = async (req, res) => {
@@ -110,20 +122,8 @@ exports.getPaymentHistory = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
-const Plan = require('../../models/Plan');
-const Subscription = require('../../models/Subscription');
-const Offer = require('../../models/Offer');
 
-// Dummy payment link generator
-const generatePaymentLink = (id) => `https://payment.gateway/checkout/${id}`;
-
-
-// Middleware to get user from JWT (dummy, replace with real auth)
-const getUserFromJWT = async (req) => {
-  // Example: req.user = { id: ... } set by auth middleware
-  // Replace with actual JWT verification logic
-  return await User.findById(req.user.id);
-};
+// --- User Profile APIs ---
 
 exports.getMe = async (req, res) => {
   try {
@@ -164,7 +164,6 @@ exports.updateMe = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
-
 
 // --- Subscription APIs ---
 

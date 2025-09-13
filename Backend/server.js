@@ -1,9 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const routes = require('./routes/index.js');
-
-const app = express();
 require('dotenv').config();
+const routes = require('./routes/index.js');
+const app = express();
+
 // Import models
 require('./models/User');
 require('./models/Plan');

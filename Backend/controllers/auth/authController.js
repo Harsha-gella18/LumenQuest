@@ -2,6 +2,25 @@ const User = require('../../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+
+// Nodemailer transporter for Gmail
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
+
+const sendEmail = async (to, subject, text) => {
+  await transporter.sendMail({
+    from: process.env.EMAIL_USER,
+    to,
+    subject,
+    text
+  });
+};
 
 // Helper: sign JWT
 const signToken = (user, expiresIn = '15m') =>
@@ -11,11 +30,6 @@ const signToken = (user, expiresIn = '15m') =>
     { expiresIn }
   );
 
-// Helper: send dummy email (replace with real email logic)
-const sendEmail = async (to, subject, text) => {
-  console.log(`Email to ${to}: ${subject} - ${text}`);
-};
-
 // POST /auth/signup
 exports.signup = async (req, res) => {
   try {
@@ -24,30 +38,45 @@ exports.signup = async (req, res) => {
       return res.status(400).json({ message: 'Email already registered' });
     }
     const passwordHash = await bcrypt.hash(password, 10);
+    // Generate OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
     const user = new User({
-      fullName, email, phone, passwordHash, preferences, profilePic
+      fullName, email, phone, passwordHash, preferences, profilePic,
+      isVerified: false,
+      otp,
+      otpExpires
     });
     await user.save();
-
-    // Send verification email (dummy)
-    await sendEmail(email, 'Verify your account', 'Verification link (dummy)');
-
+    // Send OTP email (real)
+    await sendEmail(email, 'Your FiberConnectTV OTP', `Your OTP is: ${otp}`);
     res.status(201).json({
-      message: 'Signup successful, verification email sent',
-      user: {
-        _id: user._id,
-        fullName: user.fullName,
-        email: user.email,
-        phone: user.phone,
-        preferences: user.preferences,
-        profilePic: user.profilePic,
-        role: user.role,
-        isVerified: user.isVerified,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-        lastLogin: user.lastLogin
-      }
+      message: 'Signup successful, OTP sent to email. Please verify to activate your account.',
+      userId: user._id
     });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// POST /auth/verify-otp
+exports.verifyOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (user.isVerified) return res.status(400).json({ message: 'User already verified' });
+    if (!user.otp || !user.otpExpires || user.otpExpires < Date.now()) {
+      return res.status(400).json({ message: 'OTP expired. Please signup again.' });
+    }
+    if (user.otp !== otp) {
+      return res.status(400).json({ message: 'Invalid OTP' });
+    }
+    user.isVerified = true;
+    user.otp = undefined;
+    user.otpExpires = undefined;
+    await user.save();
+    res.json({ message: 'Email verified successfully. You can now login.' });
   } catch (err) {
     res.status(500).json({ message: 'Server error' });
   }
@@ -60,6 +89,9 @@ exports.login = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
       return res.status(401).json({ message: 'Invalid credentials' });
+    }
+    if (!user.isVerified) {
+      return res.status(403).json({ message: 'Please verify your email before logging in.' });
     }
     user.lastLogin = new Date();
     await user.save();
@@ -116,7 +148,7 @@ exports.forgotPassword = async (req, res) => {
     user.resetPasswordExpires = Date.now() + 3600 * 1000; // 1 hour
     await user.save();
 
-    // Send reset email (dummy)
+    // Send reset email (real)
     await sendEmail(email, 'Reset Password', `Reset link: http://localhost:3000/reset-password/${token}`);
 
     res.json({ message: 'Reset password link sent to email' });
