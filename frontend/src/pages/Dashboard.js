@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Grid,
-  Typography,
-  Box,
-  Card,
-  CardContent,
-  Alert,
-} from '@mui/material';
+import { Grid, Typography, Box, Alert } from '@mui/material';
 import DashboardCards from '../components/dashboard/DashboardCards';
 import DashboardCharts from '../components/dashboard/DashboardCharts';
 import RecentActivity from '../components/dashboard/RecentActivity';

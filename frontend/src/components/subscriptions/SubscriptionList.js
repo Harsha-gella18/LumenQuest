@@ -1,13 +1,7 @@
+// src/components/subscription/SubscriptionList.js
 import React, { useState } from 'react';
 import {
-  Card,
-  CardContent,
   Grid,
-  Typography,
-  Chip,
-  Button,
-  Box,
-  IconButton,
   Menu,
   MenuItem,
   Dialog,
@@ -15,17 +9,12 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  Button,
 } from '@mui/material';
-import {
-  MoreVert,
-  Edit,
-  Cancel,
-  Upgrade,
-  Refresh,
-} from '@mui/icons-material';
-import { format } from 'date-fns';
-import { subscriptionService } from '../../services/subscriptionService';
+import { Edit, Cancel, Upgrade, Refresh } from '@mui/icons-material';
 import { toast } from 'react-toastify';
+import { subscriptionService } from '../../services/subscriptionService';
+import SubscriptionCard from './SubscriptionCard';
 
 const SubscriptionList = ({ subscriptions, onEdit, onRefresh }) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -74,16 +63,17 @@ const SubscriptionList = ({ subscriptions, onEdit, onRefresh }) => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'active': return 'success';
-      case 'cancelled': return 'error';
-      case 'suspended': return 'warning';
-      case 'expired': return 'default';
-      default: return 'default';
+      case 'active':
+        return 'success';
+      case 'cancelled':
+        return 'error';
+      case 'suspended':
+        return 'warning';
+      case 'expired':
+        return 'default';
+      default:
+        return 'default';
     }
-  };
-
-  const formatDate = (dateString) => {
-    return format(new Date(dateString), 'MMM dd, yyyy');
   };
 
   return (
@@ -91,79 +81,11 @@ const SubscriptionList = ({ subscriptions, onEdit, onRefresh }) => {
       <Grid container spacing={3}>
         {subscriptions.map((subscription) => (
           <Grid item xs={12} key={subscription.id}>
-            <Card>
-              <CardContent>
-                <Box display="flex" justifyContent="space-between" alignItems="flex-start">
-                  <Box flex={1}>
-                    <Box display="flex" alignItems="center" gap={2} mb={2}>
-                      <Typography variant="h6">
-                        {subscription.plan.name}
-                      </Typography>
-                      <Chip
-                        label={subscription.status}
-                        color={getStatusColor(subscription.status)}
-                        size="small"
-                      />
-                    </Box>
-
-                    <Typography variant="body2" color="textSecondary" gutterBottom>
-                      {subscription.plan.description}
-                    </Typography>
-
-                    <Grid container spacing={2} sx={{ mt: 1 }}>
-                      <Grid item xs={6} sm={3}>
-                        <Typography variant="body2" color="textSecondary">
-                          Price
-                        </Typography>
-                        <Typography variant="body1" fontWeight="bold">
-                          ${subscription.plan.price}/{subscription.plan.billingInterval}
-                        </Typography>
-                      </Grid>
-
-                      <Grid item xs={6} sm={3}>
-                        <Typography variant="body2" color="textSecondary">
-                          Next Billing
-                        </Typography>
-                        <Typography variant="body1">
-                          {subscription.nextBillingDate 
-                            ? formatDate(subscription.nextBillingDate)
-                            : 'N/A'
-                          }
-                        </Typography>
-                      </Grid>
-
-                      <Grid item xs={6} sm={3}>
-                        <Typography variant="body2" color="textSecondary">
-                          Data Quota
-                        </Typography>
-                        <Typography variant="body1">
-                          {subscription.plan.dataQuotaGB 
-                            ? `${subscription.plan.dataQuotaGB} GB`
-                            : 'Unlimited'
-                          }
-                        </Typography>
-                      </Grid>
-
-                      <Grid item xs={6} sm={3}>
-                        <Typography variant="body2" color="textSecondary">
-                          Auto Renew
-                        </Typography>
-                        <Chip
-                          label={subscription.autoRenew ? 'On' : 'Off'}
-                          size="small"
-                          color={subscription.autoRenew ? 'success' : 'default'}
-                          variant="outlined"
-                        />
-                      </Grid>
-                    </Grid>
-                  </Box>
-
-                  <IconButton onClick={(e) => handleMenuClick(e, subscription)}>
-                    <MoreVert />
-                  </IconButton>
-                </Box>
-              </CardContent>
-            </Card>
+            <SubscriptionCard
+              subscription={subscription}
+              onMenuClick={handleMenuClick}
+              getStatusColor={getStatusColor}
+            />
           </Grid>
         ))}
       </Grid>
@@ -198,14 +120,11 @@ const SubscriptionList = ({ subscriptions, onEdit, onRefresh }) => {
         <DialogTitle>Cancel Subscription</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to cancel this subscription? 
-            This action cannot be undone.
+            Are you sure you want to cancel this subscription? This action cannot be undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setCancelDialogOpen(false)}>
-            Keep Subscription
-          </Button>
+          <Button onClick={() => setCancelDialogOpen(false)}>Keep Subscription</Button>
           <Button onClick={handleCancel} color="error" variant="contained">
             Cancel Subscription
           </Button>
