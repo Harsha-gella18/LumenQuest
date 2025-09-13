@@ -20,7 +20,7 @@ import {
 } from '@mui/icons-material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from 'context/AuthContext';
 
 const validationSchema = yup.object({
   email: yup
