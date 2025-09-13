@@ -1,0 +1,24 @@
+{
+  "name": "fiberconnecttv",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Harsha-gella18/FiberConnect.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Harsha-gella18/FiberConnect/issues"
+  },
+  "homepage": "https://github.com/Harsha-gella18/FiberConnect#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
